@@ -157,7 +157,7 @@ public class Statistics {
                 flag = false;
             }
         }
-        try {
+        /*try {
             br.close();
         } catch (IOException e) {
             String err = "Sorry something gone wrong, log saved to log file.";
@@ -165,7 +165,7 @@ public class Statistics {
             CurrencyConvert.printLogsToFile(string);
             System.err.println(err);
             return;
-        }
+        }*/
 
     }
 

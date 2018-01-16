@@ -113,7 +113,7 @@ public class CurrencyConvert {
             }
 
         }
-        try {
+        /*try {
             br.close();
         } catch (IOException e) {
             String err = "Sorry something gone wrong, log saved to log file.";
@@ -121,7 +121,7 @@ public class CurrencyConvert {
             printLogsToFile(string);
             System.err.println(err);
             return null;
-        }
+        }*/
 
 
         Map<String, String> requestSetters = new HashMap<>();

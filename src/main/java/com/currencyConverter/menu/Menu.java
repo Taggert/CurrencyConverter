@@ -16,12 +16,15 @@ public class Menu {
         int size = items.size();
         String errMsg = "";
         while (true) {
+            System.out.println("\n-----\n");
             if (errMsg != "") {
                 inputOutput.put(errMsg);
             }
             for (int i = 1; i <= size; i++) {
                 inputOutput.put(i + ". " + items.get(i - 1).displayedName());
             }
+            System.out.println("\n-----\n");
+
             int itemNumber = 0;
  
             try {
