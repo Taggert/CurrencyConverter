@@ -1,27 +1,60 @@
 package com.currencyConverter;
 
-import com.currencyConverter.core.CurrencyConvert;
-import com.currencyConverter.core.Statistics;
-import lombok.SneakyThrows;
+import com.currencyConverter.menu.*;
+import com.currencyConverter.menu.items.CalculateCurrs;
+import com.currencyConverter.menu.items.GetRates;
+import com.currencyConverter.menu.items.StatPrint;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class CurrConverter {
 
-    @SneakyThrows
+    static InputOutput inputOutput = new ConsoleInputOutput();
     public static void main(String[] args) {
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        ArrayList<Item> items = getItems();
+        Menu menu = new Menu(items, inputOutput);
+        menu.runMenu();
+        /*BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("If you want to get currency rates on date, type 'r' \n" +
                 "If you want to see statistics between two dates, type 's'");
-        String answer = br.readLine();
+        String answer = null;
+        try {
+            answer = br.readLine();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            CurrencyConvert.printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
         if(answer.equals("r")){
             CurrencyConvert.currs();
         }else if(answer.equals("s")){
             Statistics.getStat();
         }
-        br.close();
+        try {
+            br.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            CurrencyConvert.printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
+    }*/
+    }
+
+    private static ArrayList<Item> getItems() {
+        ArrayList<Item> res = new ArrayList<>();
+        res.add(new GetRates(inputOutput));
+        res.add(new CalculateCurrs(inputOutput));
+        res.add(new StatPrint(inputOutput));
+        res.add(new ExitItem(inputOutput));
+
+
+        return res;
     }
 
 

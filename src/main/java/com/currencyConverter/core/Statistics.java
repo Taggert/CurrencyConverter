@@ -2,10 +2,11 @@ package com.currencyConverter.core;
 
 import com.currencyConverter.pojo.FixerCurrencyResponce;
 import lombok.Data;
-import lombok.SneakyThrows;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,19 +22,27 @@ public class Statistics {
     private static String base;
     private static String curr;
 
-    public static void getStat() {
+    public static void getStat()  {
         setFields();
         drawStatistics();
     }
 
-    @SneakyThrows
-    private static void setFields() {
+   //Fill in fields of json from keyboard
+    private static void setFields()  {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         boolean flag = true;
         String str;
         while (flag) {
             System.out.println("Input first date in format YYYY-MM-DD:");
-            str = br.readLine();
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                CurrencyConvert.printLogsToFile(string);
+                System.err.println(err);
+                return;
+            }
             if (!str.equals("")) {
                 try {
                     dateStart = dateFormat.parse(str);
@@ -50,7 +59,15 @@ public class Statistics {
         while (flag) {
             System.out.println("Input second date in format YYYY-MM-DD, or press enter to use today's date:\n" +
                     "Date should after the first date");
-            str = br.readLine();
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                CurrencyConvert.printLogsToFile(string);
+                System.err.println(err);
+                return;
+            }
             if (!str.equals("")) {
                 try {
                     dateFinish = dateFormat.parse(str);
@@ -70,7 +87,15 @@ public class Statistics {
         flag = true;
         while (flag) {
             System.out.println("Input statistics step in days:");
-            str = br.readLine();
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                CurrencyConvert.printLogsToFile(string);
+                System.err.println(err);
+                return;
+            }
             if (!str.equals("")) {
                 try {
                     step = Integer.parseInt(str);
@@ -86,7 +111,15 @@ public class Statistics {
         flag = true;
         while (flag) {
             System.out.println("Input base currency(USD, EUR, RUB, ILS, etc., to see all variants type CUR):");
-            base = br.readLine();
+            try {
+                base = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                CurrencyConvert.printLogsToFile(string);
+                System.err.println(err);
+                return;
+            }
             base = base.replace(" ", "");
             if (!CurrencyConvert.currNames.contains(base)) {
                 if (base.equalsIgnoreCase("cur")) {
@@ -104,7 +137,15 @@ public class Statistics {
 
         while (flag) {
             System.out.println("Input currency to be rated(USD, EUR, RUB, ILS, etc., to see all variants type CUR):");
-            curr = br.readLine();
+            try {
+                curr = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                CurrencyConvert.printLogsToFile(string);
+                System.err.println(err);
+                return;
+            }
             curr = curr.replace(" ", "");
             if (curr.equalsIgnoreCase("cur")) {
                 for (String string : CurrencyConvert.currNames) {
@@ -116,28 +157,48 @@ public class Statistics {
                 flag = false;
             }
         }
-        br.close();
+        try {
+            br.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            CurrencyConvert.printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
 
     }
 
+    //Send request to server to get rates of chosen currencies
     private static Map<Date, Double> getRates() {
+        Properties properties = new Properties();
+        InputStream is = Statistics.class.getResourceAsStream("/application.properties");
+        try {
+            properties.load(is);
+        } catch (IOException e) {
+            String err = "Sorry file of properties can't be readed, log saved to log file.";
+            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            CurrencyConvert.printLogsToFile(string);
+            System.err.println(err);
+        }
         RestTemplate restTemplate = new RestTemplate();
         Map<Date, Double> res = new LinkedHashMap<>();
         Calendar calendar = Calendar.getInstance();
         for (calendar.setTime(dateStart); calendar.getTime().before(dateFinish) || calendar.getTime().equals(dateFinish); calendar.add(Calendar.DAY_OF_MONTH, step)) {
             Date date = calendar.getTime();
             Map<String, String> requestSetters = new HashMap<>();
-            requestSetters.put("latest", dateFormat.format(date));
-            requestSetters.put("currs", curr);
-            requestSetters.put("base", base);
-            String url = "https://api.fixer.io/{latest}?symbols={currs}&base={base}";
+            requestSetters.put(properties.getProperty("date"), dateFormat.format(date));
+            requestSetters.put(properties.getProperty("currs"), curr);
+            requestSetters.put(properties.getProperty("base"), base);
+            String url = properties.getProperty("url");
             FixerCurrencyResponce body = restTemplate.getForEntity(url, FixerCurrencyResponce.class, requestSetters).getBody();
             res.put(date, body.getRates().get(curr));
         }
         return res;
     }
 
-    private static void drawStatistics() {
+    //Print statistics of chosen currencies in inputed range of dates in graphics
+    private static void drawStatistics(){
         Map<Date, Double> source = getRates();
         Map.Entry<Date, Double> min = source.entrySet().stream()
                 .min(Comparator.comparingDouble(Map.Entry::getValue)).get();
@@ -150,6 +211,7 @@ public class Statistics {
         }
     }
 
+    //Service method for drawing
     private static String starMultiply(String star, double index) {
         String res = "";
         for (int i = 0; i < index; i++) {

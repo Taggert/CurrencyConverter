@@ -2,35 +2,53 @@ package com.currencyConverter.core;
 
 
 import com.currencyConverter.pojo.FixerCurrencyResponce;
-import lombok.SneakyThrows;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CurrencyConvert {
 
-    static final List<String> currNames = Arrays.asList(new String[]{"AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
-            "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK",
-            "NZD", "PHP", "PLN", "RON", "RUB", "SEK", "SGD", "THB", "TRY", "USD", "ZAR", "EUR"});
+    /* static final List<String> currNames = Arrays.asList(new String[]{"AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
+             "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK",
+             "NZD", "PHP", "PLN", "RON", "RUB", "SEK", "SGD", "THB", "TRY", "USD", "ZAR", "EUR"});*/
+    public static Set<String> currNames = getCurrencies();
 
-    @SneakyThrows
-    public static void currs() {
+    public static SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
+
+
+    public static FixerCurrencyResponce currs() {
+        SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
         RestTemplate restTemplate = new RestTemplate();
-
         String base = "";
         Date date = new Date();
-        String dateString;
+        String dateString = "";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String currs = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         boolean flag = true;
+        Properties properties = new Properties();
+        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        try {
+            properties.load(is);
+        } catch (IOException e) {
+
+            String err = "Sorry file of properties can't be readed, log saved to log file.";
+            String str = dateOutput.format(date) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(str);
+            System.err.println(err);
+            return null;
+        }
+
         while (flag) {
             System.out.println("Input date in format YYYY-MM-DD, or press enter to use today's date:");
-            dateString = br.readLine();
+            try {
+                dateString = br.readLine();
+            } catch (IOException e) {
+
+            }
             if (!dateString.equals("")) {
                 try {
                     date = dateFormat.parse(dateString);
@@ -46,7 +64,15 @@ public class CurrencyConvert {
         flag = true;
         while (flag) {
             System.out.println("Input base currency(USD, EUR, RUB, ILS, etc., to see all variants type CUR):");
-            base = br.readLine();
+            try {
+                base = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+                printLogsToFile(string);
+                System.err.println(err);
+                return null;
+            }
             base = base.replace(" ", "");
             if (!currNames.contains(base)) {
                 if (base.equalsIgnoreCase("cur")) {
@@ -64,7 +90,15 @@ public class CurrencyConvert {
         input:
         while (flag) {
             System.out.println("Input currencies to be rated(in format CURR1,CURR2,CURR3...etc., to see all variants type CUR):");
-            currs = br.readLine();
+            try {
+                currs = br.readLine();
+            } catch (IOException e) {
+                String err = "Sorry something gone wrong, log saved to log file.";
+                String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+                printLogsToFile(string);
+                System.err.println(err);
+                return null;
+            }
             currs = currs.replace(" ", "");
             if (currs.equalsIgnoreCase("cur")) {
                 for (String str : currNames) {
@@ -87,18 +121,91 @@ public class CurrencyConvert {
             }
 
         }
-        br.close();
+        try {
+            br.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+            return null;
+        }
 
 
         Map<String, String> requestSetters = new HashMap<>();
-        requestSetters.put("latest", dateFormat.format(date));
-        requestSetters.put("currs", currs);
-        requestSetters.put("base", base);
+        requestSetters.put(properties.getProperty("date"), dateFormat.format(date));
+        requestSetters.put(properties.getProperty("currs"), currs);
+        requestSetters.put(properties.getProperty("base"), base);
 
-        String url = "https://api.fixer.io/{latest}?symbols={currs}&base={base}";
+        String url = properties.getProperty("url");
 
         FixerCurrencyResponce body = restTemplate.getForEntity(url, FixerCurrencyResponce.class, requestSetters).getBody();
-        System.out.println(body.toString());
+        return body;
+    }
+
+    public static void printConvertation() {
+        System.out.println(currs());
+    }
+
+    public static void printLogsToFile(String str) {
+        Properties properties = new Properties();
+        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        try {
+            properties.load(is);
+        } catch (IOException e) {
+            String err = "Sorry file of properties can't be readed, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
+        try {
+            is.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
+        File logFile = new File(properties.getProperty("logFile"));
+        ObjectOutputStream outputStream = null;
+        try {
+            outputStream = new ObjectOutputStream(new FileOutputStream(logFile, true));
+            outputStream.writeChars("\n--------\n" + str);
+        } catch (IOException e) {
+            String err = "Sorry log file can't be readed, log saved to log file.";
+        }
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+            return;
+        }
+
+    }
+
+    public static HashSet<String> getCurrencies() {
+        Properties properties = new Properties();
+        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        try {
+            properties.load(is);
+        } catch (IOException e) {
+            String err = "Sorry file of properties can't be readed, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        FixerCurrencyResponce body = restTemplate.getForEntity(properties.getProperty("urlCurrs"), FixerCurrencyResponce.class).getBody();
+        Set<String> pocket = body.getRates().keySet();
+        HashSet<String> currencies = new HashSet<>(pocket);
+        currencies.add("USD");
+        return currencies;
+
     }
 }
 
