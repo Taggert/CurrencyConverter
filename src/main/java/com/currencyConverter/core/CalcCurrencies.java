@@ -18,11 +18,12 @@ public class CalcCurrencies {
         int money = 0;
         while (flag) {
             try {
+                //getting amount of money to convert
                 str = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
@@ -39,10 +40,10 @@ public class CalcCurrencies {
             }
         }
 
-
-        FixerCurrencyResponce body = CurrencyConvert.currs();
+        //getting currencies
+        FixerCurrencyResponce body = GettingRates.currs();
         br.close();
-        System.out.println("In " + money + " " + body.getBase() + " - ");
+        System.out.println("In " + money + " " + body.getBase() + ": ");
         for (Map.Entry<String, Double> entry : body.getRates().entrySet()) {
             System.out.println((money * entry.getValue()) + " " + entry.getKey());
         }

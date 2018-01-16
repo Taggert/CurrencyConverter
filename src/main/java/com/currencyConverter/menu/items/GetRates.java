@@ -1,6 +1,6 @@
 package com.currencyConverter.menu.items;
 
-import com.currencyConverter.core.CurrencyConvert;
+import com.currencyConverter.core.GettingRates;
 import com.currencyConverter.menu.InputOutput;
 import com.currencyConverter.menu.Item;
 
@@ -20,7 +20,7 @@ public class GetRates extends Item {
     @Override
     public void perform() {
         try {
-            inputOutput.put(CurrencyConvert.currs());
+            inputOutput.put(GettingRates.currs());
         } catch (IOException e) {
 
         }

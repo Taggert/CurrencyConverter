@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CurrencyConvert {
+public class GettingRates {
 
     /* static final List<String> currNames = Arrays.asList(new String[]{"AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
              "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK",
@@ -18,7 +18,7 @@ public class CurrencyConvert {
 
     public static SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
 
-
+    //returns Mirror-class object instance with fields returned from Internet DB
     public static FixerCurrencyResponce currs() throws IOException {
         SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
         RestTemplate restTemplate = new RestTemplate();
@@ -30,7 +30,7 @@ public class CurrencyConvert {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         boolean flag = true;
         Properties properties = new Properties();
-        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        InputStream is = GettingRates.class.getResourceAsStream("/application.properties");
         try {
             properties.load(is);
         } catch (IOException e) {
@@ -45,7 +45,7 @@ public class CurrencyConvert {
         while (flag) {
             System.out.println("Input date in format YYYY-MM-DD, or press enter to use today's date:");
 
-                dateString = br.readLine();
+            dateString = br.readLine();
 
             if (!dateString.equals("")) {
                 try {
@@ -63,8 +63,8 @@ public class CurrencyConvert {
         while (flag) {
             System.out.println("Input base currency(USD, EUR, RUB, ILS, etc., to see all variants type CUR):");
 
-                base = br.readLine();
-
+            base = br.readLine();
+            base = base.toUpperCase();
             base = base.replace(" ", "");
             if (!currNames.contains(base)) {
                 if (base.equalsIgnoreCase("cur")) {
@@ -82,16 +82,10 @@ public class CurrencyConvert {
         input:
         while (flag) {
             System.out.println("Input currencies to be rated(in format CURR1,CURR2,CURR3...etc., to see all variants type CUR):");
-            try {
-                currs = br.readLine();
-            } catch (IOException e) {
-                String err = "Sorry something gone wrong, log saved to log file.";
-                String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
-                printLogsToFile(string);
-                System.err.println(err);
-                return null;
-            }
+
+            currs = br.readLine();
             currs = currs.replace(" ", "");
+            currs = currs.toUpperCase();
             if (currs.equalsIgnoreCase("cur")) {
                 for (String str : currNames) {
                     System.out.println(str);
@@ -113,15 +107,6 @@ public class CurrencyConvert {
             }
 
         }
-        /*try {
-            br.close();
-        } catch (IOException e) {
-            String err = "Sorry something gone wrong, log saved to log file.";
-            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
-            printLogsToFile(string);
-            System.err.println(err);
-            return null;
-        }*/
 
 
         Map<String, String> requestSetters = new HashMap<>();
@@ -132,6 +117,16 @@ public class CurrencyConvert {
         String url = properties.getProperty("url");
 
         FixerCurrencyResponce body = restTemplate.getForEntity(url, FixerCurrencyResponce.class, requestSetters).getBody();
+
+         /*try {
+            br.close();
+        } catch (IOException e) {
+            String err = "Sorry something gone wrong, log saved to log file.";
+            String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
+            printLogsToFile(string);
+            System.err.println(err);
+            return null;
+        }*/
         return body;
     }
 
@@ -139,9 +134,9 @@ public class CurrencyConvert {
         System.out.println(currs());
     }
 
-    public static void printLogsToFile(String str){
+    public static void printLogsToFile(String str) {
         Properties properties = new Properties();
-        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        InputStream is = GettingRates.class.getResourceAsStream("/application.properties");
         try {
             properties.load(is);
         } catch (IOException e) {
@@ -185,9 +180,10 @@ public class CurrencyConvert {
 
     }
 
+    //returns set of Examples of currencies
     public static HashSet<String> getCurrencies() {
         Properties properties = new Properties();
-        InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
+        InputStream is = GettingRates.class.getResourceAsStream("/application.properties");
         try {
             properties.load(is);
         } catch (IOException e) {

@@ -38,8 +38,8 @@ public class Statistics {
                 str = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
@@ -63,8 +63,8 @@ public class Statistics {
                 str = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
@@ -91,8 +91,8 @@ public class Statistics {
                 str = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
@@ -115,15 +115,16 @@ public class Statistics {
                 base = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
+            base=base.toUpperCase();
             base = base.replace(" ", "");
-            if (!CurrencyConvert.currNames.contains(base)) {
+            if (!GettingRates.currNames.contains(base)) {
                 if (base.equalsIgnoreCase("cur")) {
-                    for (String string : CurrencyConvert.currNames) {
+                    for (String string : GettingRates.currNames) {
                         System.out.println(string);
                     }
                 } else {
@@ -141,17 +142,18 @@ public class Statistics {
                 curr = br.readLine();
             } catch (IOException e) {
                 String err = "Sorry something gone wrong, log saved to log file.";
-                String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-                CurrencyConvert.printLogsToFile(string);
+                String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+                GettingRates.printLogsToFile(string);
                 System.err.println(err);
                 return;
             }
+            curr=curr.toUpperCase();
             curr = curr.replace(" ", "");
             if (curr.equalsIgnoreCase("cur")) {
-                for (String string : CurrencyConvert.currNames) {
+                for (String string : GettingRates.currNames) {
                     System.out.println(string);
                 }
-            } else if (curr.split(",").length != 1 || !CurrencyConvert.currNames.contains(curr)) {
+            } else if (curr.split(",").length != 1 || !GettingRates.currNames.contains(curr)) {
                 System.err.println("You have to input right currency! " + curr + " is wrong.");
             } else {
                 flag = false;
@@ -161,8 +163,8 @@ public class Statistics {
             br.close();
         } catch (IOException e) {
             String err = "Sorry something gone wrong, log saved to log file.";
-            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-            CurrencyConvert.printLogsToFile(string);
+            String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            GettingRates.printLogsToFile(string);
             System.err.println(err);
             return;
         }*/
@@ -177,8 +179,8 @@ public class Statistics {
             properties.load(is);
         } catch (IOException e) {
             String err = "Sorry file of properties can't be readed, log saved to log file.";
-            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-            CurrencyConvert.printLogsToFile(string);
+            String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            GettingRates.printLogsToFile(string);
             System.err.println(err);
         }
         RestTemplate restTemplate = new RestTemplate();

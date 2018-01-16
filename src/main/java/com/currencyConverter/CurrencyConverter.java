@@ -8,12 +8,12 @@ import com.currencyConverter.menu.items.StatPrint;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CurrConverter {
+public class CurrencyConverter {
 
     static InputOutput inputOutput = new ConsoleInputOutput();
     public static void main(String[] args) throws IOException {
 
-
+        //Starting menu
         ArrayList<Item> items = getItems();
         Menu menu = new Menu(items, inputOutput);
         menu.runMenu();
@@ -26,13 +26,13 @@ public class CurrConverter {
             answer = br.readLine();
         } catch (IOException e) {
             String err = "Sorry something gone wrong, log saved to log file.";
-            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-            CurrencyConvert.printLogsToFile(string);
+            String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            GettingRates.printLogsToFile(string);
             System.err.println(err);
             return;
         }
         if(answer.equals("r")){
-            CurrencyConvert.printConvertation();
+            GettingRates.printConvertation();
         }else if(answer.equals("s")){
             Statistics.getStat();
         }else if(answer.equals("c")){
@@ -42,14 +42,14 @@ public class CurrConverter {
             br.close();
         } catch (IOException e) {
             String err = "Sorry something gone wrong, log saved to log file.";
-            String string = CurrencyConvert.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
-            CurrencyConvert.printLogsToFile(string);
+            String string = GettingRates.dateOutput.format(new Date())+"\n"+err+"\n"+e.toString();
+            GettingRates.printLogsToFile(string);
             System.err.println(err);
             return;
         }*/
     }
 
-
+    //Create menu items
     private static ArrayList<Item> getItems() {
         ArrayList<Item> res = new ArrayList<>();
         res.add(new GetRates(inputOutput));
