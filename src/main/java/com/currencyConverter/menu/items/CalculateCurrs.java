@@ -4,6 +4,8 @@ import com.currencyConverter.core.CalcCurrencies;
 import com.currencyConverter.menu.InputOutput;
 import com.currencyConverter.menu.Item;
 
+import java.io.IOException;
+
 public class CalculateCurrs extends Item {
 
     public CalculateCurrs(InputOutput inputOutput) {
@@ -17,6 +19,10 @@ public class CalculateCurrs extends Item {
 
     @Override
     public void perform() {
-        CalcCurrencies.calculate();
+        try {
+            CalcCurrencies.calculate();
+        } catch (IOException e) {
+
+        }
     }
 }

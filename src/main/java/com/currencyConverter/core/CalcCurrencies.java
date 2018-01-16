@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class CalcCurrencies {
 
-    public static void calculate() {
+    public static void calculate() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Input amount of money");
         String str = "";
@@ -38,16 +38,10 @@ public class CalcCurrencies {
                 System.err.println("Wrong input, try again");
             }
         }
-        try {
-            br.close();
-        } catch (IOException e) {
-            String err = "Sorry something gone wrong, log saved to log file.";
-            String string = CurrencyConvert.dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
-            CurrencyConvert.printLogsToFile(string);
-            System.err.println(err);
-            return;
-        }
+
+
         FixerCurrencyResponce body = CurrencyConvert.currs();
+        br.close();
         System.out.println("In " + money + " " + body.getBase() + " - ");
         for (Map.Entry<String, Double> entry : body.getRates().entrySet()) {
             System.out.println((money * entry.getValue()) + " " + entry.getKey());

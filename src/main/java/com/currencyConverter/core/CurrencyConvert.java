@@ -19,7 +19,7 @@ public class CurrencyConvert {
     public static SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
 
 
-    public static FixerCurrencyResponce currs() {
+    public static FixerCurrencyResponce currs() throws IOException {
         SimpleDateFormat dateOutput = new SimpleDateFormat("EEE, d MMM yyyy");
         RestTemplate restTemplate = new RestTemplate();
         String base = "";
@@ -44,11 +44,9 @@ public class CurrencyConvert {
 
         while (flag) {
             System.out.println("Input date in format YYYY-MM-DD, or press enter to use today's date:");
-            try {
-                dateString = br.readLine();
-            } catch (IOException e) {
 
-            }
+                dateString = br.readLine();
+
             if (!dateString.equals("")) {
                 try {
                     date = dateFormat.parse(dateString);
@@ -64,15 +62,9 @@ public class CurrencyConvert {
         flag = true;
         while (flag) {
             System.out.println("Input base currency(USD, EUR, RUB, ILS, etc., to see all variants type CUR):");
-            try {
+
                 base = br.readLine();
-            } catch (IOException e) {
-                String err = "Sorry something gone wrong, log saved to log file.";
-                String string = dateOutput.format(new Date()) + "\n" + err + "\n" + e.toString();
-                printLogsToFile(string);
-                System.err.println(err);
-                return null;
-            }
+
             base = base.replace(" ", "");
             if (!currNames.contains(base)) {
                 if (base.equalsIgnoreCase("cur")) {
@@ -143,11 +135,11 @@ public class CurrencyConvert {
         return body;
     }
 
-    public static void printConvertation() {
+    public static void printConvertation() throws IOException {
         System.out.println(currs());
     }
 
-    public static void printLogsToFile(String str) {
+    public static void printLogsToFile(String str){
         Properties properties = new Properties();
         InputStream is = CurrencyConvert.class.getResourceAsStream("/application.properties");
         try {
@@ -172,6 +164,11 @@ public class CurrencyConvert {
         ObjectOutputStream outputStream = null;
         try {
             outputStream = new ObjectOutputStream(new FileOutputStream(logFile, true));
+        } catch (IOException e) {
+
+        }
+        try {
+
             outputStream.writeChars("\n--------\n" + str);
         } catch (IOException e) {
             String err = "Sorry log file can't be readed, log saved to log file.";

@@ -4,6 +4,8 @@ import com.currencyConverter.core.CurrencyConvert;
 import com.currencyConverter.menu.InputOutput;
 import com.currencyConverter.menu.Item;
 
+import java.io.IOException;
+
 public class GetRates extends Item {
 
     public GetRates(InputOutput inputOutput) {
@@ -17,6 +19,10 @@ public class GetRates extends Item {
 
     @Override
     public void perform() {
-       inputOutput.put(CurrencyConvert.currs());
+        try {
+            inputOutput.put(CurrencyConvert.currs());
+        } catch (IOException e) {
+
+        }
     }
 }
